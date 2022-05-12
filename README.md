@@ -1,2 +1,2 @@
 # crispy-potato
-figura backend
+figura auth server
