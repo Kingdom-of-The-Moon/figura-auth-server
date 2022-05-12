@@ -10,6 +10,8 @@ const redis = new createClient({
 	port: 6379
 });
 
+const EX = 300;
+
 (async () => {
 	await mongo.connect();
 	console.log('MongoDB connected');
@@ -43,7 +45,8 @@ server.on('login', async (client) => {
 			if (token) return client.end(`auth.${token}`);
 
 			token = nanoid(10);
-			redis.set(uuid, token, { EX: 60 });
+			redis.set(uuid, token, { EX });
+			redis.set(token, uuid, { EX });
 
 			client.end(`auth.${token}`);
 		});
