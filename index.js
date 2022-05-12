@@ -45,8 +45,8 @@ server.on('login', async (client) => {
 			if (token) return client.end(`auth.${token}`);
 
 			token = nanoid(10);
-			redis.set(uuid, token, { EX });
-			redis.set(token, uuid, { EX });
+			await redis.set(uuid, token, { EX });
+			await redis.set(token, uuid, { EX });
 
 			client.end(`auth.${token}`);
 		});
