@@ -14,19 +14,25 @@ const EX = 300;
 
 (async () => {
 	await mongo.connect();
-	console.log('MongoDB connected');
 	await redis.connect();
-	console.log('Redis connected');
 })();
 
 const server = mc.createServer({
 	version: false,
 	motd: 'figura auth server',
 	port: 25565,
+	encryption: false,
 	onlineMode: true
 });
 
 server.on('login', async (client) => {
+	console.log(`Getting auth token for ${client.username}`);
+
+	// on disconnect
+	client.on('end', async () => {
+		console.log(`${client.username} disconnected`);
+	});
+
 	// get uuid of client from mojang api
 	https.get('https://api.mojang.com/users/profiles/minecraft/' + client.username, (res) => {
 		let data = '';
@@ -42,11 +48,14 @@ server.on('login', async (client) => {
 			if (user?.banned) return client.end(`banned.${user.banned}`);
 
 			token = await redis.get(uuid);
+			if (token) console.log(`Authenticated ${client.username} with ${token}, closing connection. (cached token)`);
 			if (token) return client.end(`auth.${token}`);
 
 			token = nanoid(10);
 			await redis.set(uuid, token, { EX });
 			await redis.set(token, uuid, { EX });
+
+			console.log(`Authenticated ${client.username} with ${token}, closing connection.`);
 
 			client.end(`auth.${token}`);
 		});
