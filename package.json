@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kingdom-of-The-Moon/crispy-potato.git"
+    "url": "git+https://github.com/Kingdom-of-The-Moon/figura-auth-server.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Kingdom-of-The-Moon/crispy-potato/issues"
+    "url": "https://github.com/Kingdom-of-The-Moon/figura-auth-server/issues"
   },
-  "homepage": "https://github.com/Kingdom-of-The-Moon/crispy-potato#readme",
+  "homepage": "https://github.com/Kingdom-of-The-Moon/figura-auth-server#readme",
   "dependencies": {
     "minecraft-protocol": "^1.34.0",
     "mongodb": "^4.5.0",
