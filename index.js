@@ -15,6 +15,7 @@ const EX = 300;
 (async () => {
 	await mongo.connect();
 	await redis.connect();
+	console.log('Figura auth server is online.');
 })();
 
 const server = mc.createServer({
@@ -45,11 +46,11 @@ server.on('login', async (client) => {
 
 			let token = null;
 
-			if (user?.banned) return client.end(`banned.${user.banned}`);
+			if (user?.banned) return client.end(JSON.stringify({ type: 'banned', reason: user.banned }));
 
 			token = await redis.get(uuid);
 			if (token) console.log(`Authenticated ${client.username} with ${token}, closing connection. (cached token)`);
-			if (token) return client.end(`auth.${token}`);
+			if (token) return client.end(JSON.stringify({ type: 'auth', token: token }));
 
 			token = nanoid(10);
 			await redis.set(uuid, token, { EX });
@@ -57,7 +58,7 @@ server.on('login', async (client) => {
 
 			console.log(`Authenticated ${client.username} with ${token}, closing connection.`);
 
-			client.end(`auth.${token}`);
+			client.end(JSON.stringify({ type: 'auth', token: token }));
 		});
 	});
 });
