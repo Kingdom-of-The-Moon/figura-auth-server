@@ -10,6 +10,19 @@ const redis = new createClient({
 	port: 6379
 });
 
+let funnies = [
+	'deez',
+	'figua',
+	'large cheese',
+	'smart fran or fart smran',
+	'fart'
+];
+
+let beforePing = (res, client, cb) => {
+	res.description.text = funnies[Math.floor(Math.random() * funnies.length)];
+	cb(null, res);
+}
+
 const EX = 300;
 
 (async () => {
@@ -22,43 +35,29 @@ const server = mc.createServer({
 	version: false,
 	motd: 'figura auth server',
 	port: 25565,
-	encryption: false,
+	beforePing: beforePing,
 	onlineMode: true
 });
 
 server.on('login', async (client) => {
 	console.log(`Getting auth token for ${client.username}`);
 
-	// on disconnect
-	client.on('end', async () => {
-		console.log(`${client.username} disconnected`);
-	});
+	const uuid = client.uuid.replace(/-/g, '');
+	const user = await mongo.db('figura').collection('users').findOne({ uuid });
 
-	// get uuid of client from mojang api
-	https.get('https://api.mojang.com/users/profiles/minecraft/' + client.username, (res) => {
-		let data = '';
-		res.on('data', (chunk) => {
-			data += chunk;
-		});
-		res.on('end', async () => {
-			const uuid = JSON.parse(data).id;
-			const user = await mongo.db('figura').collection('users').findOne({ uuid });
+	let token = null;
 
-			let token = null;
+	if (user?.banned) return client.end(JSON.stringify({ type: 'banned', reason: user.banned }));
 
-			if (user?.banned) return client.end(JSON.stringify({ type: 'banned', reason: user.banned }));
+	token = await redis.get(uuid);
+	if (token) console.log(`Authenticated ${client.username} with ${token}, closing connection. (cached token)`);
+	if (token) return client.end(JSON.stringify({ type: 'auth', token: token }));
 
-			token = await redis.get(uuid);
-			if (token) console.log(`Authenticated ${client.username} with ${token}, closing connection. (cached token)`);
-			if (token) return client.end(JSON.stringify({ type: 'auth', token: token }));
+	token = nanoid(10);
+	await redis.set(uuid, token, { EX });
+	await redis.set(token, uuid, { EX });
 
-			token = nanoid(10);
-			await redis.set(uuid, token, { EX });
-			await redis.set(token, uuid, { EX });
+	console.log(`Authenticated ${client.username} with ${token}, closing connection.`);
 
-			console.log(`Authenticated ${client.username} with ${token}, closing connection.`);
-
-			client.end(JSON.stringify({ type: 'auth', token: token }));
-		});
-	});
+	client.end(JSON.stringify({ type: 'auth', token: token }));
 });
