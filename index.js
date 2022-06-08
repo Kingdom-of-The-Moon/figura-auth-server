@@ -27,7 +27,6 @@ let beforePing = (res, client, cb) => {
 	res.description.text = funnies[Math.floor(Math.random() * funnies.length)];
 	let img = fs.readFileSync(`./funnies/${moreFunnies[Math.floor(Math.random() * moreFunnies.length)]}`);
 	res.favicon = `data:image/png;base64,${e(img)}`;
-	console.log(res);
 	cb(null, res);
 }
 
