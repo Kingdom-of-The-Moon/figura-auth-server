@@ -1,8 +1,10 @@
 const { MongoClient } = require('mongodb');
 const { createClient } = require('redis');
 const mc = require('minecraft-protocol');
-const https = require('https');
+const fs = require('fs');
 const { nanoid } = require('nanoid');
+
+let e = s => Buffer.from(s).toString('base64');
 
 const mongo = new MongoClient('mongodb://admin:securePassword123@192.168.1.119:27017/?authMechanism=DEFAULT');
 const redis = new createClient({
@@ -19,8 +21,13 @@ let funnies = [
 	'hamburger'
 ];
 
+let moreFunnies = fs.readdirSync('./funnies');
+
 let beforePing = (res, client, cb) => {
 	res.description.text = funnies[Math.floor(Math.random() * funnies.length)];
+	let img = fs.readFileSync(`./funnies/${moreFunnies[Math.floor(Math.random() * moreFunnies.length)]}`);
+	res.favicon = `data:image/png;base64,${e(img)}`;
+	console.log(res);
 	cb(null, res);
 }
 
