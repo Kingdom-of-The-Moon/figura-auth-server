@@ -15,7 +15,7 @@ let funnies = [
 	'figua',
 	'large cheese',
 	'smart fran or fart smran',
-	'fart'
+	'burger'
 ];
 
 let beforePing = (res, client, cb) => {
