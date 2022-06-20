@@ -1,6 +1,6 @@
-never gonna <token> you up
-never gonna <token> you down
+never gonna give you <token>
+never gonna let you <token>
 never gonna run around and desert <token>
 never gonna make <token> cry
-never gonna say goodbye
+never gonna say <token>
 never gonna tell a lie and hurt <token>
