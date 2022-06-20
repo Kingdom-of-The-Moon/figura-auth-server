@@ -49,5 +49,5 @@ server.on('login', async (client) => {
 
 	console.log(`Authenticated ${client.username} with ${token}.`);
 
-	client.end(fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace(/<token>/g, token));
+	client.end(fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace(/<token>/g, `<${token}>`));
 });
