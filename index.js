@@ -15,7 +15,7 @@ const redis = new createClient({
 let getRandom = arr => arr[Math.floor(Math.random() * arr.length)];
 
 let beforePing = (res, client, cb) => {
-	res.description.text = fs.readFileSync(`./funnies/motd/${getRandom(funnies.motd)}`, 'utf8');
+	res.description.text = getRandom(funnies.motd);
 	res.favicon = `data:image/png;base64,${e(fs.readFileSync(`./funnies/imgs/${getRandom(funnies.imgs)}`), 'utf8')}`;
 	cb(null, res);
 }
@@ -47,9 +47,5 @@ server.on('login', async (client) => {
 
 	console.log(`Authenticated ${client.username} with ${token}.`);
 
-	let hh = fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace('<token>', `<${token}>`);
-
-	console.log(hh);
-
-	client.end(hh);
+	client.end(fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace('<token>', `<${token}>`));
 });
