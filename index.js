@@ -5,6 +5,8 @@ const fs = require('fs');
 const { nanoid } = require('nanoid');
 const funnies = require('./funnies');
 
+console.log(funnies);
+
 let e = s => Buffer.from(s).toString('base64');
 
 const redis = new createClient({
@@ -47,5 +49,5 @@ server.on('login', async (client) => {
 
 	console.log(`Authenticated ${client.username} with ${token}.`);
 
-	client.end(fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace('<token>', `<${token}>`));
+	client.end(fs.readFileSync(`./funnies/auth/${getRandom(funnies.auth)}`, 'utf8').replace(/<token>/g, token));
 });
